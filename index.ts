@@ -12,34 +12,51 @@ const desiredTimes = [
   "22:00:00",
 ];
 
+const clubIds = [442, 554];
+
 async function main() {
   const api = new Api();
 
   const date = "2024-12-05";
   const city_id = 4215;
-  const club_id = 442;
+
   const beachVollybal = "beach_volleyball";
 
-  const courts = await api.getCourts(date, city_id, club_id);
+  const clubs = await api.getClubs(city_id);
 
-  for (const court of courts.courts) {
-    const isVolleyball = court.tags
-      .map((tag) => {
-        return tag.id;
-      })
-      .includes(beachVollybal);
-
-    if (!isVolleyball) {
-      continue;
-    }
-
-    console.log(`${court.name} - ${court.type}`);
-
-    for (const hour of court.hours) {
-      if (desiredTimes.includes(hour.hour) && hour.available) {
-        console.log(hour.hour);
+  for (const id of clubIds) {
+    let clubName;
+    for (const club of clubs) {
+      if (club.id === id) {
+        clubName = club.name;
       }
     }
+
+    const courts = await api.getCourts(date, city_id, id);
+
+    console.log(clubName);
+
+    for (const court of courts.courts) {
+      const isVolleyball = court.tags
+        .map((tag) => {
+          return tag.id;
+        })
+        .includes(beachVollybal);
+
+      if (!isVolleyball) {
+        continue;
+      }
+
+      console.log(`${court.name} - ${court.type}`);
+
+      for (const hour of court.hours) {
+        if (desiredTimes.includes(hour.hour) && hour.available) {
+          console.log(hour.hour.substring(0, 5));
+        }
+      }
+    }
+
+    console.log("\n");
   }
 }
 

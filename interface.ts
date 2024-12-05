@@ -1,3 +1,13 @@
+export interface AvailableCourt {
+  courtName: string;
+  avaiableHours: AvailableHour[];
+}
+
+export interface AvailableHour {
+  startTime: string;
+  endTime: string;
+}
+
 export interface ScheduleDay {
   date: string;
   schedule_notes: string;

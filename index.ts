@@ -13,9 +13,10 @@ const desiredTimes = [
 ];
 
 const clubIds = [442, 554];
+const BASE_URL = "https://api.gripo.com.br/app/v1";
 
 async function main() {
-  const api = new Api();
+  const api = new Api(BASE_URL);
 
   const date = "2024-12-05";
   const city_id = 4215;
@@ -47,7 +48,7 @@ async function main() {
         continue;
       }
 
-      console.log(`${court.name} - ${court.type}`);
+      console.log(court.name);
 
       for (const hour of court.hours) {
         if (desiredTimes.includes(hour.hour) && hour.available) {

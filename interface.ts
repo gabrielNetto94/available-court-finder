@@ -66,3 +66,12 @@ export interface Tag {
   id: string;
   name: string;
 }
+
+export interface AvaiableCourt {
+  name: string;
+  avaiableHours: string[];
+}
+export interface AvaiableClub {
+  name: string;
+  courts: AvaiableCourt[];
+}

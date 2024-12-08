@@ -14,13 +14,19 @@ export const enum CLUBS {
   SUMMER_BEACH = 554,
   PIER_158 = 442,
 }
+
+export const CLUB_NAME_MAP: Record<number, string> = {
+  [CLUBS.SUMMER_BEACH]: "Summer Beach",
+  [CLUBS.PIER_158]: "Pier 158",
+};
+
 export const clubIds = [CLUBS.PIER_158, CLUBS.SUMMER_BEACH];
 
-export const enum CITY {
+export const enum CITIES {
   SANTA_MARIA = 4215,
 }
 
-export const enum SPORT {
+export const enum SPORTS {
   BEACH_VOLLEYBALL = "beach_volleyball",
 }
 

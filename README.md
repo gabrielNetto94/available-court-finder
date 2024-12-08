@@ -5,6 +5,6 @@ A ideia é criar uma solução que liste automaticamente os horários disponíve
 
 ### Próximas tarefas
 
-- [x] Função para listar os próximos X dias
+- [x] Listar horários disponíveis nos próximos X dias
 - [ ] Aos finais de semana listar horários entre 15:00 e 19:00
 - [ ] Enviar os dados via whatsapp ou telgram (a definir)

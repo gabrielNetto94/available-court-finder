@@ -1,4 +1,4 @@
-import { getAvailableCourts } from "../index";
+import { getAvailableCourts } from "./clubs";
 import { ScheduleDay } from "./interface";
 
 describe("getAvailableCourts", () => {

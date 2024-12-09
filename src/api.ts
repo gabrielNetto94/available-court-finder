@@ -10,8 +10,8 @@ export class Api {
   }
 
   async getCourts(date: string, city_id: number, club_id: number) {
-    const scheduleDay: ScheduleDay = JSON.parse(JSON.stringify(mock));
-    return scheduleDay;
+    // const scheduleDay: ScheduleDay = JSON.parse(JSON.stringify(mock));
+    // return scheduleDay;
 
     const url = this._baseUrl + "/schedule/available";
     const resp = await axios.post<ScheduleDay>(url, {

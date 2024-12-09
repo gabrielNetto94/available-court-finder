@@ -21,6 +21,12 @@ export const weekdaysTimes = [
   "22:00:00",
 ];
 
+export enum HOUR {
+  ONE = 2,
+  ONE_AND_HALF = 3,
+  TWO = 3,
+  TWO_AND_HALF = 4,
+}
 export enum WEEKDAYS {
   Sunday = 0,
   Monday = 1,
@@ -31,14 +37,14 @@ export enum WEEKDAYS {
   Saturday = 6,
 }
 
-export const daysOfWeek: Record<number, string[]> = {
-  0: weekendTimes,
-  1: weekdaysTimes,
-  2: weekdaysTimes,
-  3: weekdaysTimes,
-  4: weekdaysTimes,
-  5: weekdaysTimes,
-  6: weekendTimes,
+export const daysOfWeek: Record<WEEKDAYS, string[]> = {
+  [WEEKDAYS.Sunday]: weekendTimes,
+  [WEEKDAYS.Monday]: weekdaysTimes,
+  [WEEKDAYS.Tuesday]: weekdaysTimes,
+  [WEEKDAYS.Wednesday]: weekdaysTimes,
+  [WEEKDAYS.Thursday]: weekdaysTimes,
+  [WEEKDAYS.Friday]: weekdaysTimes,
+  [WEEKDAYS.Saturday]: weekendTimes,
 };
 
 export const enum CLUBS {

@@ -7,6 +7,7 @@ import {
   SPORTS,
   daysOfWeek,
   WEEKDAYS,
+  HOUR,
 } from "./consts";
 import { availableClub, availableCourt, ScheduleDay } from "./interface";
 
@@ -23,8 +24,10 @@ export async function getAvailableClubs(date: string) {
       continue;
     }
 
+    const { dayOfWeek } = getDesiredTimesByDate(courts.date);
+
     availableClubs.push({
-      name: getClubName(id),
+      name: getClubName(id) + " - " + dayOfWeek,
       date,
       courts: availableCourts,
     });
@@ -39,10 +42,7 @@ function getClubName(clubId: number): string {
 export function getAvailableCourts(scheduleDay: ScheduleDay): availableCourt[] {
   let availableCourts: availableCourt[] = [];
 
-  const { desiredTimes, dayOfWeek } = getDesiredTimesByDate(scheduleDay.date);
-
-  console.log("day of week", dayOfWeek);
-  console.log("desired times", desiredTimes);
+  const { desiredTimes } = getDesiredTimesByDate(scheduleDay.date);
 
   for (const court of scheduleDay.courts) {
     const isVolleyball = court.tags
@@ -59,6 +59,7 @@ export function getAvailableCourts(scheduleDay: ScheduleDay): availableCourt[] {
 
     // for (const [index, currentHour] of court.hours.entries()) {
     //   if (desiredTimes.includes(currentHour.hour) && currentHour.available) {
+
     //     const desiredIndex = desiredTimes.findIndex(
     //       (time) => currentHour.hour === time
     //     );
@@ -87,20 +88,45 @@ export function getAvailableCourts(scheduleDay: ScheduleDay): availableCourt[] {
     //   }
     // }
 
-    court.hours.forEach((item) => {
-      if (desiredTimes.includes(item.hour) && item.available) {
-        const index = desiredTimes.findIndex((time) => {
-          return item.hour === time;
+    for (let i = 0; i < court.hours.length; i++) {
+      // e a hora start que eu quero? ex: 14:00
+      if (
+        desiredTimes.includes(court.hours[i].hour) &&
+        court.hours[i].available
+      ) {
+        const pesos = Array.from({ length: HOUR.ONE }).map((_, index) => {
+          return index;
         });
 
-        const nextTime = desiredTimes[index + 1];
+        const itsAllAvailable = pesos.every(
+          (peso) => court.hours.at(i + peso)?.available
+        );
 
-        const start = item.start_hour.substring(0, 5);
-        const end = item.end_hour.substring(0, 5);
+        if (itsAllAvailable) {
+          const start = court.hours[i].start_hour.substring(0, 5);
+          const end = court.hours[i + pesos.length - 1].end_hour.substring(
+            0,
+            5
+          );
+          availableHours.push(start + " - " + end);
+        }
+      } else continue;
+    }
 
-        availableHours.push(start + " - " + end);
-      }
-    });
+    // court.hours.forEach((item) => {
+    //   if (desiredTimes.includes(item.hour) && item.available) {
+    //     const index = desiredTimes.findIndex((time) => {
+    //       return item.hour === time;
+    //     });
+
+    //     // const nextTime = desiredTimes[index + 1];
+
+    //     const start = item.start_hour.substring(0, 5);
+    //     const end = item.end_hour.substring(0, 5);
+
+    //     availableHours.push(start + " - " + end);
+    //   }
+    // });
 
     if (availableHours.length < 2) {
       continue;
@@ -128,9 +154,9 @@ function getDesiredTimesByDate(dateString: string): {
   desiredTimes: string[];
   dayOfWeek: string;
 } {
-  const date = new Date(dateString);
+  const date = new Date(dateString.replace("-", "/"));
 
-  const dayOfWeek = date.getDay();
+  const dayOfWeek = date.getDay() as WEEKDAYS;
 
   return {
     desiredTimes: daysOfWeek[dayOfWeek],

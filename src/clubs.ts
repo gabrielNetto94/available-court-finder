@@ -5,7 +5,8 @@ import {
   CITIES,
   CLUB_NAME_MAP,
   SPORTS,
-  desiredTimes,
+  daysOfWeek,
+  WEEKDAYS,
 } from "./consts";
 import { availableClub, availableCourt, ScheduleDay } from "./interface";
 
@@ -35,10 +36,15 @@ function getClubName(clubId: number): string {
   return CLUB_NAME_MAP[clubId];
 }
 
-export function getAvailableCourts(courts: ScheduleDay): availableCourt[] {
+export function getAvailableCourts(scheduleDay: ScheduleDay): availableCourt[] {
   let availableCourts: availableCourt[] = [];
 
-  for (const court of courts.courts) {
+  const { desiredTimes, dayOfWeek } = getDesiredTimesByDate(scheduleDay.date);
+
+  console.log("day of week", dayOfWeek);
+  console.log("desired times", desiredTimes);
+
+  for (const court of scheduleDay.courts) {
     const isVolleyball = court.tags
       .map((tag) => {
         return tag.id;
@@ -50,8 +56,45 @@ export function getAvailableCourts(courts: ScheduleDay): availableCourt[] {
     }
 
     let availableHours: string[] = [];
+
+    // for (const [index, currentHour] of court.hours.entries()) {
+    //   if (desiredTimes.includes(currentHour.hour) && currentHour.available) {
+    //     const desiredIndex = desiredTimes.findIndex(
+    //       (time) => currentHour.hour === time
+    //     );
+
+    //     const nextTime = desiredTimes[desiredIndex + 1];
+    //     const nextHour = court.hours[index + 1];
+
+    //     // console.log("current hour", currentHour.hour);
+    //     // console.log("next hour", nextHour.hour);
+    //     // console.log(nextHour.hour == nextTime);
+
+    //     if (nextHour.hour == nextTime && nextHour.available) {
+    //       const start = currentHour.start_hour.substring(0, 5);
+
+    //       // const end = item.end_hour.substring(0, 5);
+    //       // const nextStart = nextHour.start_hour.substring(0, 5);
+
+    //       const nextEnd = nextHour.end_hour.substring(0, 5);
+
+    //       const concat = start + " - " + nextEnd;
+
+    //       console.log(concat);
+    //       availableHours.push(concat);
+    //       // availableHours.push(nextStart + " - " + nextEnd);
+    //     }
+    //   }
+    // }
+
     court.hours.forEach((item) => {
       if (desiredTimes.includes(item.hour) && item.available) {
+        const index = desiredTimes.findIndex((time) => {
+          return item.hour === time;
+        });
+
+        const nextTime = desiredTimes[index + 1];
+
         const start = item.start_hour.substring(0, 5);
         const end = item.end_hour.substring(0, 5);
 
@@ -79,4 +122,18 @@ export function printAvailableClubs(availableCLubs: availableClub[]) {
       court.availableHours.forEach((item) => console.log(item));
     });
   });
+}
+
+function getDesiredTimesByDate(dateString: string): {
+  desiredTimes: string[];
+  dayOfWeek: string;
+} {
+  const date = new Date(dateString);
+
+  const dayOfWeek = date.getDay();
+
+  return {
+    desiredTimes: daysOfWeek[dayOfWeek],
+    dayOfWeek: WEEKDAYS[dayOfWeek],
+  };
 }

@@ -17,8 +17,6 @@ export const weekdaysTimes = [
   "20:00:00",
   "20:30:00",
   "21:00:00",
-  "21:30:00",
-  "22:00:00",
 ];
 
 export enum GAME_TIME {

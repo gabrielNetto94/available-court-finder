@@ -5,7 +5,9 @@ import {
   CITIES,
   CLUB_NAME_MAP,
   SPORTS,
-  desiredTimes,
+  daysOfWeek,
+  WEEKDAYS,
+  gameTime,
 } from "./consts";
 import { availableClub, availableCourt, ScheduleDay } from "./interface";
 
@@ -22,8 +24,10 @@ export async function getAvailableClubs(date: string) {
       continue;
     }
 
+    const { dayOfWeek } = getDesiredTimesByDate(courts.date);
+
     availableClubs.push({
-      name: getClubName(id),
+      name: getClubName(id) + " - " + dayOfWeek,
       date,
       courts: availableCourts,
     });
@@ -35,33 +39,36 @@ function getClubName(clubId: number): string {
   return CLUB_NAME_MAP[clubId];
 }
 
-export function getAvailableCourts(courts: ScheduleDay): availableCourt[] {
+export function getAvailableCourts(scheduleDay: ScheduleDay): availableCourt[] {
   let availableCourts: availableCourt[] = [];
 
-  for (const court of courts.courts) {
-    const isVolleyball = court.tags
-      .map((tag) => {
-        return tag.id;
-      })
-      .includes(SPORTS.BEACH_VOLLEYBALL);
+  const { desiredTimes } = getDesiredTimesByDate(scheduleDay.date);
 
-    if (!isVolleyball) {
-      continue;
-    }
+  for (const court of scheduleDay.courts) {
+    if (!court.tags.some((tag) => tag.id === SPORTS.BEACH_VOLLEYBALL)) continue;
 
     let availableHours: string[] = [];
-    court.hours.forEach((item) => {
-      if (desiredTimes.includes(item.hour) && item.available) {
-        const start = item.start_hour.substring(0, 5);
-        const end = item.end_hour.substring(0, 5);
+    for (let i = 0; i < court.hours.length; i++) {
+      const currentHour = court.hours[i];
 
-        availableHours.push(start + " - " + end);
+      // Check if the current hour matches the desired times and is available
+      if (desiredTimes.includes(currentHour.hour) && currentHour.available) {
+        const isAllTimesAvailable = gameTime.every((offset) => {
+          const nextHour = court.hours.at(i + offset);
+          return nextHour?.available && desiredTimes.includes(nextHour.hour);
+        });
+
+        if (isAllTimesAvailable) {
+          const start = formatHour(currentHour.start_hour);
+          const end = formatHour(court.hours[i + gameTime.length - 1].end_hour);
+
+          availableHours.push(`${start} - ${end}`);
+        }
       }
-    });
-
-    if (availableHours.length < 2) {
-      continue;
     }
+
+    if (availableHours.length < gameTime.length) continue;
+
     availableCourts.push({
       name: court.name,
       availableHours,
@@ -69,6 +76,9 @@ export function getAvailableCourts(courts: ScheduleDay): availableCourt[] {
   }
 
   return availableCourts.length < 1 ? [] : availableCourts;
+}
+function formatHour(hour: string) {
+  return hour.substring(0, 5);
 }
 
 export function printAvailableClubs(availableCLubs: availableClub[]) {
@@ -79,4 +89,18 @@ export function printAvailableClubs(availableCLubs: availableClub[]) {
       court.availableHours.forEach((item) => console.log(item));
     });
   });
+}
+
+function getDesiredTimesByDate(dateString: string): {
+  desiredTimes: string[];
+  dayOfWeek: string;
+} {
+  const date = new Date(dateString.replace("-", "/"));
+
+  const dayOfWeek = date.getDay() as WEEKDAYS;
+
+  return {
+    desiredTimes: daysOfWeek[dayOfWeek],
+    dayOfWeek: WEEKDAYS[dayOfWeek],
+  };
 }

@@ -21,12 +21,19 @@ export const weekdaysTimes = [
   "22:00:00",
 ];
 
-export enum HOUR {
-  ONE = 2,
+export enum GAME_TIME {
+  ONE_HOUR = 2,
   ONE_AND_HALF = 3,
-  TWO = 3,
+  TWO_HOURR = 3,
   TWO_AND_HALF = 4,
 }
+
+export const gameTime = Array.from({ length: GAME_TIME.ONE_HOUR }).map(
+  (_, index) => {
+    return index;
+  }
+);
+
 export enum WEEKDAYS {
   Sunday = 0,
   Monday = 1,

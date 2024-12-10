@@ -8,7 +8,7 @@ async function main() {
   // console.log(argv);
   // return;
   try {
-    const days = getNextDays(5);
+    const days = getNextDays();
 
     days.forEach(async (day) => {
       const availableCLubs = await getAvailableClubs(day);

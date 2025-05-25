@@ -1,0 +1,47 @@
+services:
+    # nginx:
+    #     image: "nginx:latest"
+    #     container_name: nginx
+    #     restart: unless-stopped
+    #     ports:
+    #         - "80:80"
+    #     volumes:
+    #         - ./proxy.conf:/etc/nginx/conf.d/default.conf
+    #     networks:
+    #         - proxy
+
+    # telegram-bot:
+    #     container_name: "telegram-bot"
+    #     build:
+    #         dockerfile: Dockerfile
+    #     env_file:
+    #         - ./.env
+    #     volumes:
+    #         - ./:/app
+    #     ports:
+    #         - "3000:3000"
+    #     restart: unless-stopped
+    #     depends_on:
+    #         - nginx
+    #     networks:
+    #         - proxy
+
+    court-finder2:
+        container_name: "court-finder2"
+        build:
+            # context: ../available-court-finder
+            dockerfile: Dockerfile
+        # env_file:
+        #     - ./.env
+        volumes:
+            - ./:/app
+        ports:
+            - "3001:3001"
+        restart: unless-stopped
+        # depends_on:
+        #     - nginx
+        networks:
+            - proxy
+
+networks:
+    proxy:

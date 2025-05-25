@@ -1,30 +1,31 @@
 import { getAvailableClubs, printAvailableClubs } from "./src/clubs";
-import yargs from "yargs/yargs";
-import { hideBin } from "yargs/helpers";
+import Fastify from "fastify";
+import type { FastifyRequest, FastifyReply } from "fastify";
+import { getNextDays } from "./src/utils";
 
-async function main() {
-  // const argv = yargs(hideBin(process.argv)).argv;
+const port = 3001;
 
-  // console.log(argv);
-  // return;
+async function fastifyHandler(req: FastifyRequest, res: FastifyReply) {
   try {
-    const days = getNextDays();
+    const day = getNextDays()[0];
+    const availableCLubs = await getAvailableClubs(day);
+    printAvailableClubs(availableCLubs);
 
-    days.forEach(async (day) => {
-      const availableCLubs = await getAvailableClubs(day);
-      printAvailableClubs(availableCLubs);
+    res.header("Content-Type", "application/json");
+    res.status(200);
+    res.send({
+      availableCLubs,
     });
   } catch (error) {
     console.error(error);
   }
 }
 
-function getNextDays(numberOfDays = 1): string[] {
-  return Array.from({ length: numberOfDays }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() + i);
-    return date.toISOString().split("T")[0];
-  });
-}
-
-main();
+const app = Fastify({
+  logger: true,
+});
+app.get("/courts", fastifyHandler);
+app.get("/ping", async (req, res) => {
+  res.send({ message: "pong" });
+});
+app.listen({ port });
